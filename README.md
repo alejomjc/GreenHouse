@@ -1,91 +1,101 @@
-# GreenHouse — Emissions demo
+# GreenHouse Emissions Tracker
 
-This repository contains a Django REST API backend and an Angular frontend that displays aggregated greenhouse gas emissions by year.
+Full-stack application for tracking and visualizing greenhouse gas emissions data.
 
-Quick overview
-- Backend: Django + Django REST Framework. App: `emissions`.
-  - Endpoints:
-    - `GET /api/emissions/` — list/filter emission records (supports DRF pagination)
-    - `GET /api/emissions/aggregate/` — aggregated total emissions by year
-  - Fixtures: `emissions/fixtures/emissions.json`
-  - Management command: `python manage.py seed_emissions` (loads fixtures if DB empty)
-- Frontend: Angular app in `frontend/`
-  - Service: `src/app/emissions.service.ts`
-  - Chart component: `src/app/emissions-chart.component.ts` (uses chart.js)
+## Tech Stack
 
-Run backend (local)
-1. Create virtualenv and install requirements:
+**Backend:**
+- Django + Django REST Framework
+- SQLite database
+- Python 3.11
 
+**Frontend:**
+- Angular 15
+- Chart.js for data visualization
+- TypeScript
+
+## Features
+
+- ✅ Emissions data visualization with interactive charts
+- ✅ Filter by country, activity, and emission type
+- ✅ Responsive design for mobile and desktop
+- ✅ REST API with filtering and aggregation
+- ✅ Dockerized for easy deployment
+
+## API Endpoints
+
+- `GET /api/emissions/` - List/filter emission records
+- `GET /api/emissions/aggregate/` - Aggregated emissions by year
+- `GET /api/emissions/filters/` - Available filter options
+
+## Quick Start with Docker
+
+**Prerequisites:** Docker and Docker Compose installed
+
+1. Clone the repository:
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+git clone https://github.com/alejomjc/GreenHouse.git
+cd GreenHouse
 ```
 
-2. Apply migrations and load fixtures (optional):
-
+2. Start the application:
 ```bash
-python manage.py migrate
-python manage.py loaddata emissions    # or python manage.py seed_emissions
+docker-compose up --build
 ```
 
-3. Run the Django dev server:
+3. Access the application:
+- Frontend: http://localhost:4200
+- Backend API: http://localhost:8000/api/emissions/
 
+The database will be automatically created and populated with sample data on first run.
+
+## Development
+
+### Stop the application:
 ```bash
-python manage.py runserver
+docker-compose down
 ```
 
-The API will be available at `http://127.0.0.1:8000/api/emissions/`.
-
-Run frontend (local)
-1. Install Node.js and npm (if you don't have them). On macOS you can use Homebrew:
-
+### View logs:
 ```bash
-brew install node
+docker-compose logs -f
 ```
 
-2. Install dependencies and start Angular dev server (proxy is configured to forward `/api` to the backend):
-
+### Rebuild containers:
 ```bash
-cd frontend
-npm install
-npm start
+docker-compose up --build
 ```
 
-Open `http://localhost:4200` in your browser.
-
-Notes about development/CI
-- CORS: `CORS_ALLOW_ALL_ORIGINS = True` is set in `GreenHouse/settings.py` for development convenience.
-- The frontend uses a dev proxy: `frontend/proxy.conf.json` points `/api` to `http://web:8000` (suitable for Docker). The `npm start` script uses that proxy file.
-
-Tests
-- Django tests (backend):
-
+### Reset database:
 ```bash
-python manage.py test
+docker-compose down -v
+docker-compose up --build
 ```
 
-- Angular tests (frontend):
-  - A unit test for the Angular `EmissionsService` was added at `frontend/src/app/emissions.service.spec.ts`.
-  - To run Angular tests locally (requires Node/npm):
+## Project Structure
 
-```bash
-cd frontend
-npm install
-npm test
+```
+GreenHouse/
+├── emissions/          # Django app
+│   ├── models.py      # Emission data model
+│   ├── views.py       # API views
+│   ├── serializers.py # DRF serializers
+│   └── migrations/    # Database migrations (includes initial data)
+├── frontend/          # Angular application
+│   └── src/app/
+│       ├── emission.model.ts           # TypeScript interface
+│       ├── emissions.service.ts        # API service
+│       └── emissions-chart.component.ts # Chart component with filters
+├── docker-compose.yml # Docker orchestration
+└── Dockerfile        # Backend container
 ```
 
-What I changed/added
-- Frontend:
-  - `src/app/emissions.service.ts` — normalize paginated responses and normalize aggregated endpoint response.
-  - `src/app/emissions-chart.component.ts` — added loading state, no-data state, and improved error handling.
-  - `src/app/emissions.service.spec.ts` — new unit test for the service (uses HttpClientTestingModule).
-- Repo root: `README.md` (this file).
+## Sample Data
 
-If you want, I can also:
-- Add an Angular `loading` spinner or nicer UX for the chart.
-- Switch the frontend to use `ng2-charts` module (uncommented in `AppModule`).
-- Add CI config (GitHub Actions) to run Django and Angular tests.
+The application includes sample emissions data for:
+- **Countries:** United Kingdom, France, Germany, Spain, Italy
+- **Activities:** Air travel, Waste, Agriculture, Transport, Industry, Energy Production
+- **Emission Types:** CO2, N2O, CH4
+- **Years:** 2015-2020
 
-If you'd like me to run the Angular tests here, I can attempt it if you allow installing Node/npm in this environment; otherwise you can run the commands above locally.
-
+Data is automatically loaded via Django migrations on first run.
