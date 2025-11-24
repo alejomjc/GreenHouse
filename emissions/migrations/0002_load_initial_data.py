@@ -1,8 +1,12 @@
 from django.db import migrations
+import sys
 
 
 def load_initial_emissions(apps, schema_editor):
     """Load initial emissions data."""
+    if 'test' in sys.argv:
+        return
+
     Emission = apps.get_model('emissions', 'Emission')
 
     # Only load if database is empty
@@ -118,4 +122,3 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(load_initial_emissions, reverse_load_initial_emissions),
     ]
-

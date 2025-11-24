@@ -40,7 +40,7 @@ cd GreenHouse
 
 2. Start the application:
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 3. Access the application:
@@ -53,24 +53,62 @@ The database will be automatically created and populated with sample data on fir
 
 ### Stop the application:
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### View logs:
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### Rebuild containers:
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 ### Reset database:
 ```bash
-docker-compose down -v
-docker-compose up --build
+docker compose down -v
+docker compose up --build
 ```
+
+## Testing
+
+### Backend Tests (Django)
+
+Run all backend tests:
+```bash
+docker compose exec web python manage.py test
+```
+
+Run tests for a specific app:
+```bash
+docker compose exec web python manage.py test emissions
+```
+
+Run tests with verbose output:
+```bash
+docker compose exec web python manage.py test --verbosity=2
+```
+
+### Frontend Tests (Angular)
+
+Run all frontend tests (single run):
+```bash
+docker compose exec frontend npm test
+```
+
+Run tests in watch mode for development:
+```bash
+docker compose exec frontend npm run test -- --watch
+```
+
+Run tests with code coverage:
+```bash
+docker compose exec frontend npm run test -- --code-coverage
+```
+
+**Note:** Tests are not executed automatically when starting containers. They should be run manually during development or as part of a CI/CD pipeline.
 
 ## Project Structure
 
